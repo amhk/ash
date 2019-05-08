@@ -16,8 +16,16 @@ enum ShellReturnCode {
 }
 
 fn cmd_init() -> Result<ShellReturnCode, String> {
-    // TODO: println!("{}", include_str!("../scripts/init.sh"));
-    Ok(ShellReturnCode::Error)
+    let template = include_str!("../scripts/init.sh");
+    let script = template.replace(
+        "<template:binary>",
+        std::env::current_exe()
+            .map_err(|x| x.to_string())?
+            .to_str()
+            .ok_or("failed to convert binary path to string")?,
+    );
+    println!("{}", script);
+    Ok(ShellReturnCode::Print)
 }
 
 fn cmd_envsetup(_script: &str) -> Result<ShellReturnCode, String> {
