@@ -58,6 +58,25 @@ pub fn find_default_config_file(mut root: PathBuf) -> Result<PathBuf, io::Error>
     }
 }
 
+pub fn find_default_modinfo_file() -> Result<PathBuf, io::Error> {
+    let mut path = PathBuf::new();
+    path.push(std::env::var("ANDROID_PRODUCT_OUT").or_else(|_| {
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "failed to get ANDROID_PRODUCT_OUT",
+        ))
+    })?);
+    path = path.canonicalize()?;
+    path.push("module-info.json");
+    if !path.exists() {
+        return Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "failed to find default modinfo file",
+        ));
+    }
+    Ok(path)
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -82,5 +101,13 @@ mod tests {
     fn test_find_default_config_file() {
         assert!(super::find_default_config_file("tests".into()).is_ok());
         assert!(super::find_default_config_file("/".into()).is_err());
+    }
+
+    #[test]
+    fn test_find_default_modinfo_file() {
+        std::env::set_var("ANDROID_PRODUCT_OUT", "tests");
+        assert!(super::find_default_modinfo_file().is_ok());
+        std::env::set_var("ANDROID_PRODUCT_OUT", "");
+        assert!(super::find_default_modinfo_file().is_err());
     }
 }
