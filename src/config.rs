@@ -1,6 +1,6 @@
 use serde::Deserialize;
-use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::{fs, io};
 
 #[derive(Deserialize, Debug)]
 pub struct ModuleGroup {
@@ -43,6 +43,21 @@ pub fn parse_groups<P: AsRef<Path>>(config_path: P) -> Result<Vec<ModuleGroup>, 
     Ok(groups)
 }
 
+pub fn find_default_config_file(mut root: PathBuf) -> Result<PathBuf, io::Error> {
+    loop {
+        let path = root.join("ash.toml");
+        if path.exists() {
+            return Ok(path);
+        }
+        if !root.pop() {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                "ash.toml not found",
+            ));
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -61,5 +76,11 @@ mod tests {
         let mod1 = groups.iter().find(|item| item.name == ":idmap").unwrap();
         assert_eq!(mod1.modules.len(), 3);
         assert_eq!(mod1.tests, None);
+    }
+
+    #[test]
+    fn test_find_default_config_file() {
+        assert!(super::find_default_config_file("tests".into()).is_ok());
+        assert!(super::find_default_config_file("/".into()).is_err());
     }
 }
