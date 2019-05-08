@@ -1,7 +1,7 @@
 mod config;
 mod modinfo;
 
-use clap::{App, Arg, ArgMatches, SubCommand};
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use config::ModuleGroup;
 use memmap::MmapOptions;
 use modinfo::ModuleInfoSet;
@@ -109,6 +109,7 @@ fn exec_cmd(args: &ArgMatches) -> Result<ShellReturnCode, String> {
 
 fn main() {
     let args = App::new("ash")
+        .setting(AppSettings::SubcommandRequired)
         .arg(Arg::with_name("config").long("config").takes_value(true))
         .arg(Arg::with_name("dry-run").long("dry-run"))
         .arg(Arg::with_name("modinfo").long("modinfo").takes_value(true))
