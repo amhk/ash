@@ -1,3 +1,4 @@
+mod config;
 mod modinfo;
 
 use clap::{App, Arg, ArgMatches, SubCommand};

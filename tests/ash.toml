@@ -1,0 +1,13 @@
+envsetup = """
+source build/envsetup.sh
+lunch aosp_x86_64-eng
+"""
+
+[[module-group]]
+name = ":framework"
+modules = [ "framework", "libandroidfw", "aapt2", "libandroid_runtime", "framework-res", "services" ]
+tests = [ "CtsPackageInstallerApp" ]
+
+[[module-group]]
+name = ":idmap"
+modules = [ "idmap", "libandroidfw", "libandroidfw_tests" ]
