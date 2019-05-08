@@ -6,9 +6,9 @@ use std::convert::TryFrom;
 
 #[derive(Deserialize, Debug)]
 pub struct ModuleInfo {
-    module_name: String,
-    path: Vec<String>,
-    installed: Vec<String>,
+    pub module_name: String,
+    pub path: Vec<String>,
+    pub installed: Vec<String>,
 }
 
 impl TryFrom<&str> for ModuleInfo {
